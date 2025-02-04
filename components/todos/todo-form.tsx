@@ -17,28 +17,31 @@ import { useToast } from "@/components/ui/use-toast"
 import { createTodoAction } from "@/app/_action"
 
 const todoFormSchema = z.object({
-  title: z
-    .string()
+  title: z.string().min(1, { message: "Title is required" }),
+  description: z.string().optional(),
+  date: z.string().min(1, { message: "Date is required" }), 
 })
 
 type TodoFormValues = z.infer<typeof todoFormSchema>
 
 const defaultValues: Partial<TodoFormValues> = {
   title: "",
+  description: "",
+  date: "",
 }
 
 export function TodoForm() {
   const { toast } = useToast()
   const form = useForm<TodoFormValues>({
     resolver: zodResolver(todoFormSchema),
-    defaultValues
+    defaultValues,
   })
 
   async function onSubmit(data: TodoFormValues) {
-    const title = data?.title
-    if (!title || typeof title !== 'string') return
-
-    await createTodoAction(title)
+    const { title, description, date } = data
+    if (!title || !date||!description) return
+    const dateObject = new Date(date)
+    await createTodoAction( title, description, dateObject ) 
 
     toast({
       title: "Your todo has been created.",
@@ -47,19 +50,43 @@ export function TodoForm() {
     form.reset()
   }
 
-  // const resetData = () => form.resetField('title')
-
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="flex items-end gap-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
           name="title"
           render={({ field }) => (
-            <FormItem className="w-full max-w-lg">
-              <FormLabel>Create a New Todo</FormLabel>
+            <FormItem>
+              <FormLabel>Title</FormLabel>
               <FormControl>
-                <Input placeholder="todo" {...field} />
+                <Input placeholder="Enter title" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Description</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter description " {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="date"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Date</FormLabel>
+              <FormControl>
+                <Input type="date" {...field}  />
               </FormControl>
               <FormMessage />
             </FormItem>

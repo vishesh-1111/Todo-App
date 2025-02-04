@@ -1,37 +1,62 @@
-import prisma from "./prisma";
-
+import task from '../models/task'; 
+import MongoConnect from '../database/mongodb'
+MongoConnect();
 export async function getTodos() {
   try {
-    const todos = await prisma.todo.findMany()
-    return { todos }
+    const todos = await task.find({}).lean();
+    return { todos };
   } catch (error) {
-    return { error }
+    return { error };
   }
 }
 
-export async function createTodo(title: string) {
+
+export async function createTodo(title: string, description: string, dueDate: Date) {
   try {
-    const todo = await prisma.todo.create({ data: { title } })
-    return { todo }
+    const newTask = new task({ title, description, dueDate });
+    const savedTask = await newTask.save();
+    return { todo: savedTask };
   } catch (error) {
-    return { error }
+    return { error };
   }
 }
 
-export async function updateTodoStatus(id: number, done: boolean) {
+export async function updateTodoStatus(id: string, done: boolean) {
+  console.log(id,done);
   try {
-    const todo = await prisma.todo.update({ where: { id }, data: { done } })
-    return { todo }
+    const old =await task.findById(id);
+    console.log('old',old);
+    const updatedTask = await task.findByIdAndUpdate(
+      id,
+      { done:done},
+      { new: true } 
+    );
+
+    console.log(updatedTask)
+    return { todo: updatedTask };
   } catch (error) {
-    return { error }
+    return { error };
   }
 }
 
-export async function deleteTodoById(id: number) {
+export async function deleteTodoById(id: string) {
   try {
-    const todo = await prisma.todo.delete({ where: { id } })
-    return { todo }
+    const deletedTask = await task.findByIdAndDelete(id);
+    return { todo: deletedTask };
   } catch (error) {
-    return { error }
+    return { error };
+  }
+}
+
+export async function updateTodo(id: string, updates:any) {
+  try {
+    const updatedTask = await task.findByIdAndUpdate(
+      id,
+      { $set: updates },
+      { new: true } 
+    );
+    return { todo: updatedTask };
+  } catch (error) {
+    return { error };
   }
 }
