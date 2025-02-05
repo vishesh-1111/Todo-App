@@ -9,17 +9,26 @@ Persistent storage with MongoDB
 Follow these steps to get the project running locally:
 
 Prerequisites
+
 Node.js installed
+
 MongoDB connection URI (local or cloud, e.g., MongoDB Atlas)
+
 Steps:
 On your Terminal:
+
 Clone the repository
+
 git clone https://github.com/vishesh-1111/todo-app.git
+
 cd todo-app
+
 Add MongoDB URI to the environment variables
 
 Create a .env file in the root directory and add the following:
+
 MONGO_URI=your_mongodb_connection_uri
+
 Install dependencies
 npm install
 Run the development server
