@@ -21,7 +21,7 @@ function TodoList({ todo }: TodoProps) {
       defaultChecked={todo?.done}
       onCheckedChange={(checked: boolean) => {
         startTransition(() => {
-          updateTodoStatusAction(todo?._id, checked);
+          updateTodoStatusAction(todo?._id, checked)
         });
       }}
     />

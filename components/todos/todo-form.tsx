@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input"
 import { useForm } from "react-hook-form"
 import { useToast } from "@/components/ui/use-toast"
 import { createTodoAction } from "@/app/_action"
-
+import { useState } from "react";
 const todoFormSchema = z.object({
   title: z.string().min(1, { message: "Title is required" }),
   description: z.string().optional(),
@@ -36,12 +36,16 @@ export function TodoForm() {
     resolver: zodResolver(todoFormSchema),
     defaultValues,
   })
+  const [isLoading, setIsLoading] = useState(false);
 
   async function onSubmit(data: TodoFormValues) {
+    setIsLoading(true);
     const { title, description, date } = data
     if (!title || !date||!description) return
     const dateObject = new Date(date)
     await createTodoAction( title, description, dateObject ) 
+    setIsLoading(false);
+
 
     toast({
       title: "Your todo has been created.",
@@ -92,8 +96,18 @@ export function TodoForm() {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+       <Button type="submit" disabled={isLoading} className="w-full flex items-center justify-center">
+          {isLoading ? (
+            <div className="flex items-center gap-2">
+              <span>Submitting...</span>
+            </div>
+          ) : (
+            "Submit"
+          )}
+        </Button>
+
       </form>
+
     </Form>
   )
 }
