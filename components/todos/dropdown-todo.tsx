@@ -7,21 +7,23 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useState } from "react"
+import { useState,useEffect } from "react"
 import { useForm } from "react-hook-form"
 
 export function DropdownTodo({ todo }: { todo: any }) {
-  const theme = localStorage.getItem('theme')
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
   const [selectedTodo, setSelectedTodo] = useState<any>(null)
-
+  const [theme, setTheme] = useState<string | null>(null);
   const { register, handleSubmit, setValue } = useForm({
     defaultValues: {
       title: "",
       description: "",
     },
   })
-
+  useEffect(() => {
+    const storedTheme = localStorage.getItem("theme");
+    setTheme(storedTheme);
+  }, []);
   const deleteTodo = () => {
     deleteTodoAction(todo._id)
   }
